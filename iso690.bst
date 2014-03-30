@@ -1575,10 +1575,10 @@ FUNCTION {begin.bib}
   if$
   "\begin{thebibliography}{"  longest.label  * "}" *
   write$ newline$
-  "\providecommand{\biburl}[1]{\textless\url{#1}\textgreater}"
+  "\providecommand{\biburl}[1]{\url{#1}}"
 %   "\providecommand{\biburl}[1]{#1}"
   write$ newline$
-  "\providecommand{\urlprefix}{Available at WWW: }"
+  "\providecommand{\urlprefix}{Available from: }"
   write$ newline$
   "\expandafter\ifx\csname urlstyle\endcsname\relax"
   write$ newline$

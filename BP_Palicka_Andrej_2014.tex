@@ -11,7 +11,7 @@
 % \usepackage[latin2]{inputenc} % LaTeX source encoded as ISO-8859-2
 % \usepackage[cp1250]{inputenc} % LaTeX source encoded as Windows-1250
 
-\usepackage[demo]{graphicx}
+\usepackage{graphicx}
  %graphics files inclusion
 % \usepackage{subfig} %subfigures
 \usepackage{amsmath} %advanced maths
@@ -104,7 +104,7 @@ This thesis concerns itself with a model that is represented in the form of a de
 A machine learning algorithm tries to learn a certain function that either describes the data in some way, or tries to predict an outcome. We recognize these basic methods of data mining \cite{fayyad1996data}:
 \begin{description}
 \item [Classification] This method maps the data set to a known finite set containing the labels. An example of classification is a model that decides whether a certain email message is a spam or not.
-\item [Regression:] This method tries to predict a value of some continuous variable. An example of a regression may be prediction of redshifts based from the spectra.
+\item [Regression:] This method tries to predict a value of some numeric variable. An example of a regression may be prediction of redshifts based from the spectra.
 \item [Clustering:] This method describes the data and tries to find a previously unknown finite set of categories the data would fall in. These categories can overlap each other, if certain data belong to multiple categories. An example of clustering may be discovering kinds of stars from spectra.
 \item [Summarization:] This method attempts to find a compact description of data. It may simply mean calculating some statistical properties like means for each field, or it could mean something more complex, like discovering functional relationships between attributes.
 \item [Dependency modeling:] This method tries to find dependencies between variables. 
@@ -515,7 +515,7 @@ In this experiment, we tested the performance of Random Forests on Be stars spec
 
 \begin{figure}
 
-\includegraphics{whatever.jpg}
+\includegraphics[width=300pt]{emission_spectrum}
 \centering
 \caption{Example of a pure emission spectrum}
 \label{fig:pure_emission}
@@ -524,7 +524,7 @@ In this experiment, we tested the performance of Random Forests on Be stars spec
 
 \begin{figure}
 \centering
-\includegraphics{whatever.jpg}
+\includegraphics[width=300pt]{small_abs_spectrum}
 \caption{Example of an emission with a small absorbtion}
 \label{fig:small_abs}
 
@@ -532,14 +532,14 @@ In this experiment, we tested the performance of Random Forests on Be stars spec
 
 \begin{figure}
 \centering
-\includegraphics{whatever.jpg}
+\includegraphics[width=300pt]{big_abs_spectrum}
 \caption{Example of an emission with a large absorbtion}
 \label{fig:large_abs}
 
 \end{figure}
 \begin{figure}
 \centering
-\includegraphics{whatever.jpg}
+\includegraphics[width=300pt]{absorbtion_spectrum}
 \caption{Example of a pure absorbtion}
 \label{fig:pure_absrob}
 
@@ -727,7 +727,7 @@ trees/values & out-of-bag & train-test set & time \\ \hline
 \begin{description}
 	\item[RDF] Random decision forest
 	\item[DT] Decision tree
-	\item[SVM] Support vector machine
+	\item[SPDT] Streaming Parallel Decision Tree
 \end{description}
 
 \chapter{FITS format}

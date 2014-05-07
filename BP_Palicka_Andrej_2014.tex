@@ -61,7 +61,7 @@
 \placeForDeclarationOfAuthenticity{Prague}
 \keywordsCS{rozhodovacie stromy, rozhodovacie lesy, data mining, astroinformatika}
 \keywordsEN{decsion trees, decision forests, data mining, astroinformatics}
-\declarationOfAuthenticityOption{1} %select as appropriate, according to the desired license
+\declarationOfAuthenticityOption{4} %select as appropriate, according to the desired license
 
 
 \begin{document}
@@ -574,7 +574,7 @@ trees/values & out-of-bag & x-validation & train-test set & time \\ \hline
 2000         &94.19 \%           &93.91 \%              &95.25 \%                &74.65        \\ \hline
 \end{tabular}
 \caption{Performance of scikit implementation on raw data}
-\label{my-label}
+\label{tab:scikit-raw}
 \end{table}
 \begin{table}[h]
 \begin{tabular}{|l|l|l|l|l|}
@@ -589,28 +589,26 @@ trees/values & train-test set & time \\ \hline
 2000         & 95.43 \%              & 59.20     \\ \hline
 \end{tabular}
 \caption{Performance of cudaTree implementation on raw data}
-\label{my-label}
+\label{tab:cuda-raw}
 \end{table}
 
 The measured values show, that Random Forest started predicting the data with a good precision early on. We also see, that beyond a certain point, the accuracy stops increasing and reaches a certain limiting value. The model managed to recognize important features, that shape the spectrum, even though they were not consistent through all the data. Note, that even though H2O gave very similar results to the other implementations in terms of accuracy, it took significantly longer time to train the model than the rest. This may be due to more complex architecture and generally more inefficient implementation on a single computer, because the framework was intended to run on a distributed cloud. 
 
 Next we examine the performance of Random Forests on data, that have been binned (by the process described in section~\ref{sec:binning}). This aligns the data, making the feature columns more consistent, because they now correspond to the exactly the same wave length. As we predicted, this increased the accuracy a little. It also decreased the time necessary to train the models.
 
-\textbf{TABLES NOT FILLED OUT WITH CORRECT DATA YET}
-
 \begin{table}[h]
 \begin{tabular}{|l|l|l|l|l|}
 \hline
 trees        & out-of-bag & x-validation & train-test set & time \\ \hline
-1            &88.95 \%            &87.82 \%              &91.06 \%                 & 1.1        \\ \hline
-10           &91.35 \%            &93.34 \%              &96.00 \%                 & 11       \\ \hline
-50           &94.10 \%            &93.72 \%              &95.06 \%                 & 36.43      \\ \hline
-100          &94.10 \%            &93.81 \%              &95.24 \%                 & 85.41      \\ \hline
-500          &94.28 \%            &93.91 \%              &95.06 \%                 & 428.23     \\ \hline
-1000         &94.19 \%            &94.01 \%              &95.06 \%                 & 781        \\ \hline
-2000         &94.18 \%            &94.10 \%              &94.67 \%                 & 1456       \\ \hline
+1            &93.51 \%            &91.32 \%              &92.39 \%                 & 3.91        \\ \hline
+10           &95.78 \%            &93.34 \%              &97.34   \%                 & 5.74       \\ \hline
+50           &97.52 \%            &97.01 \%              &97.56 \%                 & 42.04      \\ \hline
+100          &97.75 \%            &97.83 \%              &98.09 \%                 & 85.59      \\ \hline
+500          &98.21 \%            &98.12 \%              &98.09 \%                 & 468.53    \\ \hline
+1000         &98.31 \%            &98.15 \%               &97.90 \%                 & 851.97        \\ \hline
+2000         &98.31 \%            &98.06 \%              &97.71 \%                 & 1656.87       \\ \hline
 \end{tabular}
-\caption{Performance of H2O implementation on binned data (NOT FILLED WITH CORRECT DATA!!)}
+\caption{Performance of H2O implementation on binned data}
 \label{tab:h2o-binned}
 \end{table}
 \begin{table}[h]
@@ -641,7 +639,7 @@ trees/values & train-test set & time \\ \hline
 2000         & 95.43 \%              & 59.20     \\ \hline
 \end{tabular}
 \caption{Performance of cudaTree implementation on binned data}
-\label{tab:scikit-binned}
+\label{tab:cuda-binned}
 \end{table}
 
 For the final test, we examined the performance of random forests on data that had undergone feature extraction \cite{bromovabeclass}
@@ -650,13 +648,13 @@ For the final test, we examined the performance of random forests on data that h
 \begin{tabular}{|l|l|l|l|l|}
 \hline
 trees        & out-of-bag & x-validation & train-test set & time \\ \hline
-1            &88.95 \%            &87.82 \%              &91.06 \%                 & 1.1        \\ \hline
-10           &91.35 \%            &93.34 \%              &96.00 \%                 & 11       \\ \hline
-50           &94.10 \%            &93.72 \%              &95.06 \%                 & 36.43      \\ \hline
-100          &94.10 \%            &93.81 \%              &95.24 \%                 & 85.41      \\ \hline
-500          &94.28 \%            &93.91 \%              &95.06 \%                 & 428.23     \\ \hline
-1000         &94.19 \%            &94.01 \%              &95.06 \%                 & 781        \\ \hline
-2000         &94.18 \%            &94.10 \%              &94.67 \%                 & 1456       \\ \hline
+1&96.14&95.99&95.28&1.06\\ \hline
+10&95.91&97.33&96.23&1.04\\ \hline
+50&97.03&97.81&96.23&1.03\\ \hline
+100&97.77&98.00&97.17&1.05\\ \hline
+500&97.98&98.09&98.11&2.10\\ \hline 
+1000&97.98&98.19&98.11&4.16\\ \hline
+2000&98.09&98.19&98.11&8.40\\ \hline
 \end{tabular}
 \caption{Performance of H2O implementation on extracted features}
 \label{tab:h2o-extracted}
@@ -665,13 +663,13 @@ trees        & out-of-bag & x-validation & train-test set & time \\ \hline
 \begin{tabular}{|l|l|l|l|l|}
 \hline
 trees/values & out-of-bag & x-validation & train-test set & time \\ \hline
-1            &40.40 \%           &88.67 \%              &90.11 \%                & 2.04          \\ \hline
-10           &90.72 \%           &94.18 \%              &94.87 \%                &2.52           \\ \hline
-50           &94.38 \%           &94.65 \%              &94.87 \%                &3.86        \\ \hline
-100          &93.91 \%           &94.38 \%              &94.68 \%                &5.95        \\ \hline
-500          &93.81 \%           &93.91 \%              &94.87 \%                &21.45      \\ \hline
-1000         &94.10 \%           &94.19 \%              &94.87 \%                &38.19         \\ \hline
-2000         &94.19 \%           &93.91 \%              &95.25 \%                &74.65        \\ \hline
+1&41.98&96.76&96.32&0.01\\ \hline
+10&96.85&98.09&97.87&0.11\\ \hline
+50&98.38&98.28&98.07&0.15\\ \hline 
+100&98.47&98.47&98.26&0.24\\ \hline
+500&98.57&98.76&97.87&0.99\\ \hline
+1000&98.57&98.57&98.26&1.92\\ \hline
+2000&98.66&98.57&98.26&3.74\\ \hline
 \end{tabular}
 \caption{Performance of scikit implementation on extracted features}
 \label{tab:scikit-extracted}
@@ -711,6 +709,7 @@ trees/values & out-of-bag & train-test set & time \\ \hline
 \caption{Performance of scikit implementation on redshift prediction}
 \label{tab:scikit-redshift}
 \end{table}
+We see, that the accuracy slightly decreased in this experiment. This may 
 \section{Common machine learning datasets}
 \setsecnumdepth{part}
 \chapter{Conclusion}

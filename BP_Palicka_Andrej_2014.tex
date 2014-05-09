@@ -71,19 +71,19 @@
 
 \setsecnumdepth{part}
 \chapter{Introduction}
-Machine learning has become phenomenon in recent years. Many businesses, institutes or organizations are increasingly more dependent on getting knowledge from data they managed to gather through their endeavors. One field that could highly benefit from machine learning approach is astroinformatics.  Astronomical surveys generate terabyres of high dimensional data in one session. However, conventional data mining algorithms fail on these kinds of data both in accuracy and in performance. 
+Machine learning has become phenomenon in recent years. Many businesses, institutes or organizations are increasingly more dependent on getting knowledge from data they managed to gather through their endeavors. One field that could highly benefit from machine learning approach is astroinformatics.  Astronomical surveys generate terabytes of high dimensional data during one session. However, conventional data mining algorithms fail on these kinds of data both in accuracy and in performance. 
 
-Random Decision Forest \cite{BR01} was shown to be a very effective algorithm on data, that contain large amount of features. In this thesis we attempt to make a survey of available RDF algorithms and implementations that perform well on big data. We will perform tests both on datasets in the UCI repository \footnote{\url{http://archive.ics.uci.edu/ml/}} and on astronomical data.
+Random Decision Forest \cite{BR01} was to be a very effective algorithm on data,that contain large amount of features. In this thesis we attempt to make a survey of available RDF algorithms and implementations that perform well on big data. We will implement a package, that wraps around several Random Forest implementations. We will perform tests both on data sets in the UCI repository \cite{uci} and on astronomical data.
 
-We introduce common data mining and machine learning concepts and techniques in chapter~\ref{chap:DM}. Chapter~\ref{chap:DT} discusses the basic block of the RDF: the decission trees. Since some distributed RDF algorithms require parallel tree building process we also examine some scallable approaches to induction of decision trees. Chapter~\ref{chap:RDF} defines the RDF, examines some of their properties, and provides examples of both serial and parallel implementations of the algorithm. We implemented a wrapper that binds several Random Forest implementations together. We include a description of the wrapper in chapter~\ref{chap:wrapper}. In chapter~\ref{chap:Experiments} we show results from our experiments with the Random Forest model on astronomical data as well as some common datasets.
+We introduce common data mining and machine learning concepts and techniques in chapter~\ref{chap:DM}. Chapter~\ref{chap:DT} discusses the basic block of the RDF: the decision trees. Since some distributed RDF algorithms require parallel tree building process we also examine some salable approaches to induction of decision trees. Chapter~\ref{chap:RDF} defines the RDF, examines some of their properties, and provides examples of both serial and parallel implementations of the algorithm. We implemented a wrapper that binds several Random Forest implementations together. We include a description of the wrapper in chapter~\ref{chap:wrapper}. In chapter~\ref{chap:Experiments} we show results from our experiments with the Random Forest model on astronomical data as well as some common data sets.
 \setsecnumdepth{all}
 
-\chapter{Knowledge discovery and data mining}
+\chapter{Knowledge discovery, data mining and astroinformatics}
 \label{chap:DM}
 Knowledge discovery from databases (KDD) is an interactive and iterative ``process of identifying valid, novel, potentially useful, and ultimately understandable patterns in data'' \cite{andrassyova1999knowledge,Fayyad96thekdd}. Data mining (DM) is usually defined as a process where ``intelligent methods are applied to extract data patterns'' \cite{han2006data} and is merely a step in the process of KDD, however these two terms are often used synonymically. The KDD consists of these steps \cite{han2006data}:
 \begin{description}
 	\item[Data cleaning:] removing noise and incorrect data
-	\item[Data integration:] combination of diferent data sources
+	\item[Data integration:] combination of different data sources
 	\item[Data selection:] selection of relevant data
 	\item[Data transformation:] transformation of data into a format that is suitable for data mining
 	\item[Data mining:] applying DM algorithms
@@ -98,7 +98,7 @@ Data mining process involves building models based on some data. These models th
 \item [The search algorithm:] The function used when the model is constructed and fitted to the data.
 \end{description}
 
-This thesis concerns itself with a model that is represented in the form of a decision forest with both classification and regression function. The serach algorithms are some heuristic functions and a preference criterion a generalization error.
+This thesis concerns itself with a model that is represented in the form of a decision forest with both classification and regression function. The search algorithms are some heuristic functions and a preference criterion a generalization error.
 
 \section{Data mining methods}
 A machine learning algorithm tries to learn a certain function that either describes the data in some way, or tries to predict an outcome. We recognize these basic methods of data mining \cite{fayyad1996data}:
@@ -111,10 +111,21 @@ A machine learning algorithm tries to learn a certain function that either descr
 \item [Change and deviation detection:] This method detects data, that are in some way different than previously measured data. This includes finding outliers, which are data that are in some way different from the majority. It is useful for finding data that are worthy of further examination.
 \end{description}
 
-A learning can either be supervised or nonsupervised. A supervised learning means, that we have a training data set, where the relationships between variables and their outcomes are already known. These data sets usually come either from historical data (such as weather patterns), or were labeled by humans specifically for the purpose of serving as a testing set. This can however bring bias and noise to the set. An unsupervised learning means, that the model is built from the data, that were not evaluated by anyone and where the relationships are unknown. The model has to discover these relationships and their possible outcomes by itself.
+A learning can either be supervised or unsupervised. A supervised learning means, that we have a training data set, where the relationships between variables and their outcomes are already known. These data sets usually come either from historical data (such as weather patterns), or were labeled by humans specifically for the purpose of serving as a testing set. This can however bring bias and noise to the set. An unsupervised learning means, that the model is built from the data, that were not evaluated by anyone and where the relationships are unknown. The model has to discover these relationships and their possible outcomes by itself.
 
 \section{Data set}
-A data set is a collection of data. It is mostly represented as a table, where each column represents a variable and each row represents a member of the data set. A member of the data set is again a collection of values that represent its respective variable. A variable may be either categorical (discrete), or numerical (continuous).
+A data set is a collection of data. It can take form of a CSV file, FITS file, image, sound wave or many others. Machine learning algorithms however usually work with a data set represented as a table, where each column represents a variable and each row represents a datum. A member of the data set is again a collection of values that represent its respective variable. A variable may be either categorical (discrete), or numerical (continuous).
+
+\section{Model validation and scoring}
+After a model is fitted over some data we have to determine how it will perform when used to analyze data it has not yet seen. This is usually done by splitting the original set into a separate testing and training set. We then train the model with the testing set and then asses its performance by running a test over the training set and comparing the results of the testing run with what the true results in the testing set. There are several scoring measures that asses how well the model did on the testing set. A simple measurure that can be used for classification would be one that computes a ratio of correctly classified data out of all data. A more advanced measure is the \(F_1\) measure, defined as
+\[
+F_1=2*\frac{\textit{precision}*\textit{recall}}{\textit{precision}+\textit{recall}}
+\]
+where precission signifies the fraction of correctly identified objects out of all that were identified and the recall means fraction of correctly identified objects of one class out of all th objects of the class. However this measure can only be used in a binary classification. In case more that two classes are present, one has to perform this measure for each class separately by considering that particular class as class one and all the other classes as class two.
+
+\section{Astroinformatics}
+Astroinformatics is a new discipline, that attempts to apply concepts from computer science and machine learning on astronomical problems. Modern astronomy even now is producing terabytes or even petabytes of data \cite{borne2009scientific}, with more to come in the future. For example the LSST will, upon its completion, generate half a petabyte of data every month \cite{becla2006designing} that will require processing and analyzing.
+
 \chapter{Decision trees}
 \label{chap:DT}
 		Decision trees are a group of supervised data mining methods, that use a tree-like structure to analyze data. They can perform either a classification of data, or a regression of data. The inner nodes of a decision tree represent testing on input attributes. \cite{CMP07} Terminal nodes in a classification tree represent the possible classes of tested objects. In a regression tree they represent predicted values for a given branch. Terminal nodes can either contain single values, or a probability vector of values \cite{TOP_DOWN_INDUCTION_SURVEY}. 
@@ -276,10 +287,8 @@ A data set is a collection of data. It is mostly represented as a table, where e
 
 		\paragraph*{Hybrid parallelism.} This is a combination of the data and task parallelism. It tries to combine the low communication overhead of the task parallelism with the lower memory requirements and processing amount of the data parallelism. The nodes that would have to cover large amount of examples use data parallelism to lower the load balance of each node. On the other hand, nodes, that cover few examples can be effectively distributed among several processors without significant memory overhead and thus eliminating costly interprocessor communication.
 
-		\subsection{Examples of parallel DT algorithms}
-			\paragraph*{SLIQ} It is a decision tree algorithm, that handles both numerical and categorical data \cite{mehta1996sliq}. In contrast with conventional decision tree algorithms which build tree recursively, SLIQ uses breadth-first tree growing strategy. To speed up numerical data, it pre-sorts the data set by each numerical attribute. 
-			\paragraph*{SPDT}
-			This algorithm solves the problem of storing all of the big data in one processor by using the horizontal data parallelism described above. Because the partitioned data may still be too big to be handled by each processor, the SLIQ build histograms of the records.
+		\subsection{Streaming Parallel Decision Tree}
+		Streaming Parallel Decison Tree (SPDT) is a state-of-the-art paralell Decision Tree algorithm. It can handle streaming data as well as traditional batch processing. It deals with large data sets by partitioning this data horizontally across several worker processors and building histograms out of them. The master processor then merges these histograms and uses them to find the best splitting point \cite{ben2010streamings}. 
 
 		\section{Advantages and disadvantages}
 		As we can see, one of the main advantages of a DT is its simplicity and intuitiveness. They can be used on all sorts of data, both for classification and for regression. They allow for errors in data and, with some improvements, can handle missing values well \cite{DMWithDecisionTrees,CMP07}. Decision trees can be converted to a set of rules just by following branches from the root node to a leaf node. Some are capable of handling both numeric and categorical values and some algorithms can be used both for classification and regression.
@@ -291,7 +300,7 @@ A data set is a collection of data. It is mostly represented as a table, where e
 
 	As with the Decision Trees, the performance of the RDF is directly affected by several factors such as the number of the trees, the means of introducing randomness into the induction, the voting process or the induction of the trees themselves.
 
-	\section{Number of trees}
+	\section{Number of trees and their diversity}
 	It can be shown, that by adding more trees, the error rate does not increase or decrease infinitely, but converges to a limiting value. Suppose we have an ensemble of classifiers \(h_1(\textbf{x}), h_2(\textbf{x}),\dots,h_K(\textbf{x})\). Define function \(\textit{mg}(\mathbf{X},Y)\) as:
 	\[\textit{mg}(\mathbf{X},Y)=\textit{avg}_kI(h_k(\mathbf{X})=Y)-\textit{max}I(h_k(\mathbf{X})=j)\] It gives an amount by which an average number of votes for the right class exceedes the average number of votes for any other class. 
 
@@ -299,12 +308,39 @@ A data set is a collection of data. It is mostly represented as a table, where e
 	\[
 	P_{\mathbf{X},Y}(P_{\Phi}(h(\mathbf{X}, \Phi)=Y)-\textit{max}P_{\Phi}(h(\mathbf{X}, \Phi)=j))
 	\]
-	This implies that there is a threshold for the number of trees in the forest, above which the trees provide only small or nonexistent improvement to the accuracy \cite{SELECTION_OF_DT}. This of course does not mean that the forest has reached an optimal number of trees --- a subset of the trees usually provides much better results. To reduce the number of trees, we can prune the forest, not unlike we did with individual trees as described in section~\ref{sec:pruning} --- in RDF, we call this process the selection. To do this, we need to define selection criteria and selection method.
+	This implies that there is a threshold for the number of trees in the forest, above which the trees provide only small or nonexistent improvement to the accuracy \cite{SELECTION_OF_DT}.
+	
+	To gain the best performence, the trees have to diverse, i. e. have small correlation between each other. In practice, this is usually hard to achieve, because they also have to be accurate, because having a lot of weak and diverse trees would bring down the accuracy of the whole forest. To achieve an accurate forest, we have to find a compromise between diversity and accuracy by combining both weak and strong learners \cite{ENSEMBLE}. This is where the feature selection and bagging help, becasue it assures that the individual trees are built by considering different features and data.
+
+	The strength of the forest can be measured in the bias-variance-covariance decomposition. Given \(T\) as number of trees, \(h_i\) as a prediction of a single tree and \(f\) as the correct value, they are defined as follows:
+	\begin{description}
+	\item[Bias] It describes the expected value of the error of each tree. An average of the bias of the forest is defined as:
+	\[
+	\overline{\textit{bias}}(H) = \frac{1}{T}\sum_{i=1}^T=E(h_i)-f
+	\]
+	\item[Variance] How different are the predictions of individual trees from an average prediction of all trees. An average of the variance of the forest is defined as:
+	\[
+	\overline{\textit{variance}}(H) = \frac{1}{T}\sum_{i=1}^T=E(h_i-E(h_i))^2
+	\]
+	\item[Covariance] It is an approximation of the correlation between trees. It describes how different are the predictions of two different trees. An average of the covariance is defined as:
+	\[
+	\overline{\textit{covariance}}(H) = \frac{1}{T(T-1)}\sum_{i=1}^T\sum_{j=1|j \neq i}^T=E(h_i-E(h_i))E(h_j-E(h_j))
+	\]
+ 	
+	An error of the whole forrest is then defined as: 
+	\[
+	\textit{err}(H)=\overline{\textit{bias}}(H)^2 + \frac{1}{T}\overline{\textit{variance}}(H) + \left(1 - \frac{1}{T}\right)\overline{\textit{covariance}}(H)
+	\]
+
+	\end{description}
+
+	\subsection{Forest pruning}
+	To improve the performance of the forest, we can prune the forest, not unlike we did with individual trees as described in section~\ref{sec:pruning} --- in RDF, we call this process the selection. To do this, we need to define selection criteria and selection method.
 
 	Selection criteria divide into filters and wrappers. Filtering criteria select trees \textit{a priori}, not taking into account the combined accuracy of the subset. Wrapper criteria select trees \textit{a posteriori}, by optimizing the combined performance of the subset \cite{PRUNING_RDF}. Wrapper criteria are generally better for building optimized subset of classifiers out of an existing set. Methods of selection may be based on several approaches.
 	One of the simplest methods usually use simple rules based upon some metric of individual classifiers. An example of these may be a method that would select \(n\) most accurate trees out of all, or select \(n\) most accurate trees for each class. These methods usually do not require much computational power, but since they do not explore different subsets of classifiers, they may not find the best suboptimal result \cite{PRUNING_RDF}. 
 	
-	A more advanced, but fast and simple methods are Sequential Forward Selection (SFS) and Sequential Backwards Selection (SBS). They both iteratively build sub-optimal subset of the ensemble by searching through the ensemble and selecting classifiers according to some given criterion. They differ in what they do after the selection. SFS starts with an empty set of classifiers and in each iteration, tests each tree and selects one, that would most improve the performance of the whole subset. SBS, on the other hand, starts with the full subset of the ensemble and at each step of the iteration, removes the classifier that drags the whole performance down the most. \cite{SELECTION_OF_DT} The proccess stops either when the accuracy of the subset reaches a certain threshold, or after a number of iterations \cite{DESIGNING-MULTIPLE-CLASS-SYS}. 
+	Methods that are more advanced, but still fast and simple to implement are Sequential Forward Selection (SFS) and Sequential Backwards Selection (SBS). They both iteratively build sub-optimal subset of the ensemble by searching through the ensemble and selecting classifiers according to some given criterion. They differ in what they do after the selection. SFS starts with an empty set of classifiers and in each iteration, tests each tree and selects one, that would most improve the performance of the whole subset. SBS, on the other hand, starts with the full subset of the ensemble and at each step of the iteration, removes the classifier that drags the whole performance down the most. \cite{SELECTION_OF_DT} The proccess stops either when the accuracy of the subset reaches a certain threshold, or after a number of iterations \cite{DESIGNING-MULTIPLE-CLASS-SYS}. 
 
 	\section{Bagging}
 	One of the techniques that is used in the RDF is \textbf{b}ootstrap \textbf{agg}regat\textbf{ing}. For each sampled instance \(T_k\) of the training set \(T\), \(k = 1, 2, \dots, K \) we randomly sample a training set with replacement from the original training set. It has the same size as the original and because it was sampled with replacement, some of the instances may appear more than once, while some may be completely excluded. \cite{quinlan1996bagging}. During the induction the bagging is used in two ways. One is for the induction of the trees, where each tree is induced from a different sample. The second is to give ongoing estimates about the generalization error, strength, correlation or variable importance.
@@ -459,9 +495,19 @@ A data set is a collection of data. It is mostly represented as a table, where e
 	As we mentioned, one of the advantages of computing on a GPU is GPUs inherent massive throughtput and parallelism. A GPU is designed specifically to run hundreds or thousands of computational tasks at once. It however has its disadvantages: 
 	\begin{itemize}
 	\item The need to transfer the data from the CPU to the GPU --- this creates some overhead before the computation starts and may prove to be a bottleneck
-	\item A limited memory --- as of 2014, the typical size of a memory of a GPU is around 1 or 2 gigabytes, with professional GPUs having more (4 - 6 GB). This is enough for smaller data sets, but it will be a problem when one tries to induct a forest for larger datasets. This can be solved by transfering data between CPU and GPU, but that would slow down the whole process.
-	\item A GPU provides significant boost only when the task requires such massive parallelism. Because the data transfers between the CPU and GPU have some overhead and the GPU cores being slower than the CPU as well as design specifically for massive parallelism, the task needs to be designed and tweaked for it.
+	\item A limited memory --- as of 2014, the typical size of a memory of a recent GPU is from two to six gigabytes, with professional GPUs having five to twelve . This is enough for smaller data sets, but it will be a problem when one tries to induct a forest for larger datasets. This can be solved either by iteratively transfering data between CPU and GPU, which slow down the whole process. Another 
+	\item A GPU provides significant boost only when the task requires such massive parallelism. Because the data transfers between the CPU and GPU have some overhead and the GPU cores are slower than the CPU as well as designed specifically for massive parallelism, the task needs to be appropriate and the implementation optimized for it.
 	\end{itemize}
+
+	\begin{table}
+    \begin{tabular}{|l|l|l|l|l|}
+    \hline
+    Specifications/Type & GeForce GTX 760 & GeForce GTX Titan & TESLA K20 & TESLA K40 \\ \hline
+    Computing cores     & 1152            & 2880              & 2496             & 2880             \\ \hline
+    Memory              & 2048 MiB        & 6144 MiB          & 5 GB             & 12 GB            \\ \hline
+    \end{tabular}
+    \caption{An example of CUDA graphic card specifications}
+	\end{table}
 
 	\subsubsection{Other platforms}
 
@@ -483,7 +529,7 @@ One of the drawbacks is that is builds only in-memory models. They cannot be ser
 \section{Integrating libraries}
 We defined two wrapper classes, that bridge the interface our wrapper is using with the interface of the implementations. To set a standard interface, we defined base classes \texttt{base\_wrapper} and \texttt{base\_forest}. 
 
-The \texttt{base\_wrapper} class serves as a main gateway with the underlying implementation. It provides an interface to import data from a CSV file and train a forest. The \texttt{import\_data} method accepts a path to the file and a boolean flag that signals if the data have a header. After importing the file, it returns a key, that identifies the file to the wrapper. The \texttt{train\_forest} method serves for inducing a forest. It accepts a key to the data set as its argument and returns an instance of a subclass of a \texttt{base\_forest}. The \texttt{base\_forest} supports scoring on a testing set, prediction, and getting an out-of-bag scores. 
+The \texttt{base\_wrapper} class serves as a main gateway with the underlying implementation. It provides an interface to import data from a CSV file and train a forest. The \texttt{import\_data} method accepts a path to the file and a boolean flag that signals if the data have a header. After importing the file, it returns a key, that identifies the file to the wrapper. The \texttt{train\_forest} method serves for inducing a forest. It accepts a key to the data set as its argument and returns an instance of a subclass of a \texttt{base\_forest}. The \texttt{base\_forest} supports scoring on a testing set, prediction, and getting an out-of-bag scores. To integrate a library, one has to subclass these two base classes and provide their own implementations of aforementioned methods.
 
 \section{Additional features}
 The wrapper supports training of Random Forest models, their scoring and running predictions. It supports data sets in CSV format, and can convert data sets in FITS binary tables into one. It supports scoring through x-validation, out-of-bag score and scoring with a separate training and testing data set. It also supports preprocessing of the features of the spectra extracted from the FITS files by binning them by their wave length.
@@ -515,32 +561,22 @@ In this experiment, we tested the performance of Random Forests on Be stars spec
 
 \begin{figure}
 
-\includegraphics[width=300pt]{emission_spectrum}
-\centering
-\caption{Example of a pure emission spectrum}
+\includegraphics[width=180pt]{emission_spectrum}
 \label{fig:pure_emission}
-
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=300pt]{small_abs_spectrum}
-\caption{Example of an emission with a small absorbtion}
+\quad
+\includegraphics[width=180pt]{small_abs_spectrum}
+\caption[Examples of spectra with pure emission and small absorbtion]{Examples of spectra with pure emission (left) and small absorbtion (right)}
 \label{fig:small_abs}
 
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=300pt]{big_abs_spectrum}
-\caption{Example of an emission with a large absorbtion}
+\includegraphics[width=180pt]{big_abs_spectrum}
 \label{fig:large_abs}
-
-\end{figure}
-\begin{figure}
 \centering
-\includegraphics[width=300pt]{absorbtion_spectrum}
-\caption{Example of a pure absorbtion}
+\includegraphics[width=180pt]{absorbtion_spectrum}
+\caption[Examples of spectra with small absorbtion and pure absorbtion]{Examples of spectra with small absorbtion (left) and pure absorbtion (right)}
 \label{fig:pure_absrob}
 
 \end{figure}
@@ -630,19 +666,20 @@ trees/values & out-of-bag & x-validation & train-test set & time \\ \hline
 \begin{tabular}{|l|l|l|l|l|}
 \hline
 trees/values & train-test set & time \\ \hline
-1            & 11.40 \%              & 4.23      \\ \hline
-10           & 94.48 \%              & 4.44      \\ \hline
-50           & 94.48 \%              & 5.34      \\ \hline
-100          & 95.81 \%              & 6.46      \\ \hline
-500          & 94.48 \%              & 20.32     \\ \hline
-1000         & 95.43 \%              & 28.97     \\ \hline
-2000         & 95.43 \%              & 59.20     \\ \hline
+1&11.22&4.84\\ \hline
+10&97.34&5.22\\ \hline
+50&96.96&6.62\\ \hline
+100&97.15&8.79\\ \hline
+500&97.34&25.04\\ \hline
+1000&97.34&49.20\\ \hline
+2000&97.34&86.72\\ \hline
+
 \end{tabular}
 \caption{Performance of cudaTree implementation on binned data}
 \label{tab:cuda-binned}
 \end{table}
 
-For the final test, we examined the performance of random forests on data that had undergone feature extraction \cite{bromovabeclass}
+For the final test, we examined the performance of random forests on data that had undergone feature extraction \cite{bromovabeclass}. This feature extraction consists of centering the data, applying the wavelet transform and an aggregation function. This greatly reduced the dimensionality of the data (in this case, it was from 1997 features to 10) and increased the accuracy of the classification. The reduction in dimensionality significantly improved the speed of the training.
 
 \begin{table}[h]
 \begin{tabular}{|l|l|l|l|l|}
@@ -675,19 +712,32 @@ trees/values & out-of-bag & x-validation & train-test set & time \\ \hline
 \label{tab:scikit-extracted}
 \end{table}
 \begin{table}[h]
-\begin{tabular}{|l|l|l|l|l|}
+\begin{tabular}{|l|l|l|}
 \hline
 trees/values & train-test set & time \\ \hline
-1            & 11.40 \%              & 4.23      \\ \hline
-10           & 94.48 \%              & 4.44      \\ \hline
-50           & 94.48 \%              & 5.34      \\ \hline
-100          & 95.81 \%              & 6.46      \\ \hline
-500          & 94.48 \%              & 20.32     \\ \hline
-1000         & 95.43 \%              & 28.97     \\ \hline
-2000         & 95.43 \%              & 59.20     \\ \hline
+1&10.25&0.05\\ \hline
+10&98.07&0.18\\ \hline
+100&99.03&1.13\\ \hline
+50&98.65&0.60\\ \hline
+500&99.03&5.37\\ \hline
+1000&98.65&11.48\\ \hline
+2000&99.03&21.53\\ \hline 
+
 \end{tabular}
 \caption{Performance of cudaTree implementation on extracted features}
 \label{tab:cuda-extracted}
+\end{table}
+
+For comparison, we include a table that shows performance of several other machine learning algorithms on these data. We also include the best score of Random Forests for each data set.
+
+\begin{table}
+    \begin{tabular}{|l|l|l|l|l|}
+    \hline
+    ~              & RDF       & DLNN       & SVM      & kNN      \\ \hline
+    Raw Data       & 96.00 \%  & 93.16 \%   & 75.39 \% & 93.73 \% \\ \hline
+    Binned Data    & 97.71 \%  & 96.61 \%   & 85.36 \% & 96.96 \% \\ \hline
+    Extracted Data & 99.03 \%  & 97,87 \% & 95.83 \% & 95.74 \% \\ \hline
+    \end{tabular}
 \end{table}
 
 \subsection{Redshift prediction}
@@ -709,12 +759,29 @@ trees/values & out-of-bag & train-test set & time \\ \hline
 \caption{Performance of scikit implementation on redshift prediction}
 \label{tab:scikit-redshift}
 \end{table}
-We see, that the accuracy slightly decreased in this experiment. This may 
+
+
+
 \section{Common machine learning datasets}
+We have conducted experiments on these data sets from the UCI repository \cite{uci} : ISOLET\footnote{\url{https://archive.ics.uci.edu/ml/datasets/ISOLET}}, Adult\footnote{\url{http://archive.ics.uci.edu/ml/datasets/Adult}}, Internet Advertisments \footnote{\url{http://archive.ics.uci.edu/ml/datasets/Internet+Advertisements}}. We have chosen these data sets either for their high dimensionality, lots of samples, or both. We include a table with best results on each data set. We have tested them with Random Forest, Deep Learning, kNN and Support Vector Machine. 
+\begin{table}
+    \begin{tabular}{lllll}
+    ~      & RDF      & DLNN     & SVM     & kNN   \\
+    ISOLET & 94.80 \% & 92.05 \% & 85.4 \% & 91.34 \\
+    Adult  & ~        & ~        & ~       & ~     \\
+    Ads    & 98.65 \% & ~        & ~       & ~     \\
+    \end{tabular}
+    \caption{Performance comparison on some common data sets}
+\end{table}
+ 
+
 \setsecnumdepth{part}
 \chapter{Conclusion}
+We have examined the machine learning model Random Decision Forest and its performance on astronomical data and large datasets. We include a description of an algorithm of Random Forest that runs on a MapReduce model and is able to scale for very large data sets. We also provide a survey of implementations that run on a GPGPU platform.
 
+We also implemented a Python package, that wraps several implementations of Random Forests and allows to train and test models with a run of a single executable file. This implementation was tested on astronomical data, as well as some larger data sets from the UCI repository. The RDF model has shown that it is capable of accurately classify data or predict their outcomes.
 
+ We will integrate the wrapper presented in this thesis in a cloud environment in Ondrejov observatory, so other can build models from their data. For the future work, we would like to develop an efficient, scalable, massively parallel implementation of the algorithm that coud run on several computing nodes, since most of today's publicly available implementations are not meant to analyze Big Data.
 \bibliographystyle{iso690}
 \bibliography{bibliography}
 
@@ -725,13 +792,17 @@ We see, that the accuracy slightly decreased in this experiment. This may
 % \printglossaries
 \begin{description}
 	\item[RDF] Random decision forest
+	\item[RF] Random forest
 	\item[DT] Decision tree
 	\item[SPDT] Streaming Parallel Decision Tree
+	\item[DL] Deep Learning
+	\item [SVM] Support Vector Machine
+	\item [kNN] k-Nearest Neighbours
 \end{description}
 
 \chapter{FITS format}
 \label{app:FITS}
-\chapter{Format for the configuration file of the wrapper}
+\chapter{Wrapper usage documentation and file format}
 
 \chapter{Contents of enclosed CD}
 

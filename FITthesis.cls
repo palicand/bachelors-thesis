@@ -54,6 +54,8 @@
 		\RequirePackage[T1]{fontenc}
 		\RequirePackage{lmodern}
 	\else
+	\RequirePackage[T1]{fontenc}
+		\RequirePackage{lmodern}
 		\AtBeginDocument{\selectlanguage{UKenglish}}
 	\fi
 \fi
